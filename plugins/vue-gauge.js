@@ -7,7 +7,7 @@ import {
   CanvasRenderer
 } from 'echarts/renderers'
 import {
-  GaugeChart
+  PieChart
 } from 'echarts/charts'
 import {
   GridComponent,
@@ -17,7 +17,7 @@ import {
 
 use([
   CanvasRenderer,
-  GaugeChart,
+  PieChart,
   GridComponent,
   TooltipComponent,
   VisualMapComponent

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="map-container">
     <svg
       id="mapa-svg"
       version="1.1"
@@ -76,5 +76,10 @@ g {
     stroke: white;
     stroke-width: 1;
   }
+}
+.map-container {
+  position: sticky;
+  top: 30px;
+  height: 75vh;
 }
 </style>

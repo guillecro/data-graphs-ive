@@ -1,5 +1,5 @@
 <template>
-  <div class="box">
+  <div class="">
     <div v-if="$fetchState.pending">
       <i class="fas fa-spin fa-sync" /> Cargando...
     </div>
@@ -7,33 +7,40 @@
       <i class="fas fa-exclamation-triangle" /> Error!
     </div>
     <div v-else>
-      <h1 class="subtitle is-6 has-text-grey-light">
-        {{ graph.fecha_actualizacion }} - {{ graph.fuente }}
-      </h1>
-      <h1 class="title is-3 has-text-primary">
+      <h1 class="title is-3 has-text-centered has-text-primary">
         {{ graph.nombre_visualizacion }}
       </h1>
       <!-- {{ graph }} -->
-      <div>
-        <VueGauge class="chart" :option="chartOptions" v-if="graphReady" />
-        <div class="chart is-flex is-justify-content-center is-align-items-center" v-else>
-          <i class="fas fa-spin fa-5x fa-sync"></i>
-        </div>
+      <div v-if="graphReady">
+        <VueGauge class="chart" :option="chartOptions" />
       </div>
-      <!-- <b-table :data="theData.values">
+      <div v-else class="chart is-flex is-justify-content-center is-align-items-center">
+        <i class="fas fa-spin fa-5x fa-sync" />
+      </div>
+      <h1 class="subtitle is-6 has-text-grey-light">
+        Fecha de actualización: {{ graph.fecha_actualizacion }} <br> Fuente: {{ graph.fuente }}
+      </h1>
+      <b-table :data="theData.values" narrowed hoverable bordered>
         <b-table-column v-slot="props" field="jurisdiccion" label="Jurisdiccion">
-          {{ props.row.jurisdiccion }}
+          {{ props.row.jurisdiccion || 'N/A' }}
         </b-table-column>
-        <b-table-column v-slot="props" field="cant_absoluta" numeric label="Cantidad">
-          {{ props.row.cant_absoluta }}
+        <b-table-column v-slot="props" field="cant_absoluta" numeric centered label="Cantidad">
+          {{ props.row.cant_absoluta || 'N/A' }}
         </b-table-column>
-        <b-table-column v-slot="props" field="porcentaje" numeric label="Porcentaje">
-          {{ props.row.cant_porcentaje }}
+        <b-table-column v-slot="props" field="porcentaje" numeric centered label="Porcentaje">
+          <b>{{ props.row.cant_porcentaje || 'N/A' }} %</b>
         </b-table-column>
-        <b-table-column v-slot="props" field="ranking" numeric sortable label="Ranking">
-          {{ props.row.ranking }}
+        <b-table-column
+          v-slot="props"
+          field="ranking"
+          numeric
+          centered
+          sortable
+          label="Ranking"
+        >
+          {{ props.row.ranking || 'N/A' }}
         </b-table-column>
-      </b-table> -->
+      </b-table>
     </div>
   </div>
 </template>
@@ -111,6 +118,9 @@ export default {
     }
   },
   computed: {
+    selected () {
+      return this.$store.state.map.selected
+    },
     googleSheetId () {
       return process.env.googleSheetId
     },
@@ -133,24 +143,26 @@ export default {
         data: []
       }
       let maxValue = 0
-      this.theData.values.forEach((v) => {
-        if (v.id_jurisdiccion === 'nacional') {
-          return
-        }
-        const _aux = {}
-        _aux.value = v.cant_absoluta
-        if (v.cant_absoluta > maxValue) {
-          maxValue = v.cant_absoluta
-        }
-        _aux.name = v.jurisdiccion
-        serie.data.push(_aux)
-      })
-      serie.data = serie.data.sort((a, b) => {
-        return b.value - a.value
-      })
-      this.chartOptions.visualMap.max = maxValue
-      this.chartOptions.series.push(serie)
-      this.graphReady = true
+      if (this.selected === 'nacional') {
+        this.theData.values.forEach((v) => {
+          if (v.id_jurisdiccion === 'nacional') {
+            return
+          }
+          const _aux = {}
+          _aux.value = v.cant_absoluta
+          if (v.cant_absoluta > maxValue) {
+            maxValue = v.cant_absoluta
+          }
+          _aux.name = v.jurisdiccion
+          serie.data.push(_aux)
+        })
+        serie.data = serie.data.sort((a, b) => {
+          return b.value - a.value
+        })
+        this.chartOptions.visualMap.max = maxValue
+        this.chartOptions.series.push(serie)
+        this.graphReady = true
+      }
     }
   }
 }

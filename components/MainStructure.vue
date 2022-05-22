@@ -2,17 +2,21 @@
   <div class="section">
     <div class="container is-fluid">
       <div class="columns">
-        <div class="column is-4">
+        <div class="column is-3">
           <ArgentinaMap />
         </div>
-        <div class="column is-4" v-if="$fetchState.pending">
-          <div class="box">
-            Loading...
+        <div class="column is-9">
+          <div class="columns">
+            <div v-if="$fetchState.pending" class="column is-12">
+              <div class="box has-text-centered">
+                <i class="fas fa-spin fa-sync" /> Cargando...
+              </div>
+            </div>
+            <div v-for="(graph,i) in graphs" v-else :key="`graph-${i}`" class="column is-6">
+              <StatsContainer :graph="graph" />
+              <!-- <Tutorial /> -->
+            </div>
           </div>
-        </div>
-        <div class="column is-4" v-for="(graph,i) in graphs" :key="`graph-${i}`" v-else>
-          <StatsContainer :graph="graph" />
-          <!-- <Tutorial /> -->
         </div>
       </div>
     </div>
