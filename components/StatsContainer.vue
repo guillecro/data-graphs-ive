@@ -1,26 +1,42 @@
 <template>
   <div class="">
-    <div class="chart is-flex is-justify-content-center is-align-items-center" v-if="$fetchState.pending">
+    <div v-if="$fetchState.pending" class="chart is-flex is-justify-content-center is-align-items-center">
       <i class="fas fa-spin fa-5x fa-sync" />
     </div>
-    <div class="chart is-flex is-justify-content-center is-align-items-center" v-else-if="$fetchState.error">
+    <div v-else-if="$fetchState.error" class="chart is-flex is-justify-content-center is-align-items-center">
       <i class="fas fa-exclamation-triangle fa-5x fa-sync" /> Error!
     </div>
     <div v-else>
-      <h1 class="title is-3 mb-0 has-text-primary has-text-centered">
+      <h1 class="title is-3 mb-0 has-text-primary has-text-centered is-700">
         {{ graph.nombre_visualizacion }}
       </h1>
       <!-- {{ graph }} -->
       <div v-if="graphReady">
-        <VueGauge class="chart" :option="chartOptions" />
+        <VueEchart class="chart" :option="chartOptions" :autoresize="true" />
       </div>
       <div v-else class="chart is-flex is-justify-content-center is-align-items-center">
         <i class="fas fa-spin fa-5x fa-sync" />
       </div>
-      <h1 class="subtitle is-6 has-text-grey-light">
-        Fecha de actualización: {{ graph.fecha_actualizacion }} <br> Fuente: {{ graph.fuente }}
-      </h1>
+      <!-- <div class="has-background-primary" style="border-radius: 5px; height: 20px; position: relative; margin: 0px 10px;">
+        <div class="has-background-white has-text-centered" style="line-height: normal; border: 2px solid #000; height: 20px; width: 20px; border-radius: 20px; position: absolute; top: 0; left: -10px;">
+          1
+        </div>
+      </div> -->
+      <div class="is-flex is-justify-content-space-between is-align-items-center my-3">
+        <!-- <button @click="showTable = !showTable" class="button is-primary ml-4" :class="{'is-outlined': !showTable}">
+          <i class="fas fa-table-list fa-fw" />&nbsp;Tabla
+        </button> -->
+        <h1 class="subtitle is-6 has-text-grey-light is-flex-grow-1 m-0">
+          <u>Fecha de actualización</u>: {{ graph.fecha_actualizacion }}<br><u>Fuente</u>: {{ graph.fuente }}
+        </h1>
+        <div class="ml-4 is-700">
+          <a class="has-text-primary" @click="showTable = !showTable" style="white-space: nowrap;">
+            {{ showTable ? 'Ocultar' : 'Mostrar' }}&nbsp;Tabla&nbsp;<i class="fas fa-fw" :class="{'fa-angle-down': !showTable, 'fa-angle-up': showTable}" />
+          </a>
+        </div>
+      </div>
       <b-table
+        v-show="showTable"
         :data="theData.values"
         :default-sort="['ranking']"
         default-sort-direction="asc"
@@ -62,6 +78,7 @@ export default {
   },
   data () {
     return {
+      showTable: false,
       theData: {
         keys: [],
         labels: {},
@@ -74,6 +91,30 @@ export default {
           max: 0,
           inRange: {
             colorAlpha: [0.1, 1]
+          }
+        },
+        tooltip: {
+          padding: [4, 10],
+          borderWidth: 0,
+          textStyle: {
+            fontFamily: 'Encode Sans',
+            fontSize: 12,
+            color: '#FFF'
+          },
+          backgroundColor: '#9283BE',
+          extraCssText: 'box-shadow: none;',
+          formatter: (a) => {
+            // console.log()
+            return `<p class="has-text-centered has-text-weight-bold">${a.data.name}</p><p class="has-text-centered">${a.percent} %</p>`
+          }
+        },
+        toolbox: {
+          show: true,
+          feature: {
+            saveAsImage: {
+              show: true,
+              title: 'Guardar'
+            }
           }
         },
         series: []
@@ -118,6 +159,14 @@ export default {
         labels: theLabels,
         values: theValues
       }
+      this.$store.commit('data/addData', {
+        id: this.graph.id_datos,
+        data: this.theData
+      })
+      this.$store.commit('data/setFetched', {
+        id: this.graph.id_datos,
+        fetched: true
+      })
       this.prepareChart()
     } catch (err) {
       console.error(err)
@@ -218,6 +267,6 @@ export default {
 
 <style lang="scss" scoped>
 .chart {
-  min-height: 500px;
+  min-height: 550px;
 }
 </style>

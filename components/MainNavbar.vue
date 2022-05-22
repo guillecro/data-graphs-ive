@@ -16,6 +16,17 @@
     </template>
 
     <template #end>
+      <b-navbar-dropdown :label="'Columnas'" :collapsible="true">
+        <b-navbar-item @click="changeColumns(12)">
+          Ancho completo
+        </b-navbar-item>
+        <b-navbar-item @click="changeColumns(6)">
+          Dos Columnas
+        </b-navbar-item>
+        <b-navbar-item @click="changeColumns(4)">
+          Tres columnas
+        </b-navbar-item>
+      </b-navbar-dropdown>
       <b-navbar-item v-if="isLoading">
         Cargando! <i class="fas fa-spin fa-sync" />
       </b-navbar-item>
@@ -49,6 +60,9 @@ export default {
   methods: {
     changeSelected (state) {
       this.$store.commit('map/setSelected', state)
+    },
+    changeColumns (columns) {
+      this.$store.commit('system/setColumns', columns)
     }
   }
 }

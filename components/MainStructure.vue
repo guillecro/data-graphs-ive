@@ -6,17 +6,20 @@
           <ArgentinaMap />
         </div>
         <div class="column is-10">
-          <div class="columns">
-            <div class="column is-12 chart is-flex is-justify-content-center is-align-items-center" v-if="$fetchState.pending">
+          <div class="columns is-multiline">
+            <div v-if="$fetchState.pending" class="column is-12 chart is-flex is-justify-content-center is-align-items-center">
               <i class="fas fa-spin fa-5x fa-sync" />
             </div>
-            <div class="column is-12 chart is-flex is-justify-content-center is-align-items-center" v-else-if="$fetchState.error">
+            <div v-else-if="$fetchState.error" class="column is-12 chart is-flex is-justify-content-center is-align-items-center">
               <i class="fas fa-exclamation-triangle fa-5x fa-sync" /> Error!
             </div>
-            <div v-for="(graph,i) in graphs" v-else :key="`graph-${i}`" class="column is-6">
+            <div v-for="(graph,i) in graphs" v-else :key="`graph-${i}`" class="column" :class="getColumns">
               <StatsContainer :graph="graph" />
               <!-- <Tutorial /> -->
             </div>
+            <!-- <div class="column is-12">
+              <ParallelRanking />
+            </div> -->
           </div>
         </div>
       </div>
@@ -53,6 +56,7 @@ export default {
             graph[k] = entry[i] !== '' ? entry[i] : null
           }
         })
+        graph.fetched = false
         output.push(graph)
       })
       this.$store.commit('data/setIndex', output)
@@ -63,6 +67,9 @@ export default {
     }
   },
   computed: {
+    getColumns () {
+      return `is-${this.$store.state.system.columns}`
+    },
     googleSheetId () {
       return process.env.googleSheetId
     },

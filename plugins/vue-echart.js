@@ -7,22 +7,27 @@ import {
   CanvasRenderer
 } from 'echarts/renderers'
 import {
-  PieChart
+  PieChart,
+  ParallelChart
 } from 'echarts/charts'
 import {
   GridComponent,
   TooltipComponent,
-  VisualMapComponent
+  VisualMapComponent,
+  ToolboxComponent,
+  ParallelComponent
 } from 'echarts/components'
 
 use([
   CanvasRenderer,
   PieChart,
+  ParallelChart,
   GridComponent,
   TooltipComponent,
-  VisualMapComponent
-
+  VisualMapComponent,
+  ToolboxComponent,
+  ParallelComponent
 ])
 
 // register globally (or you can do it locally)
-Vue.component('VueGauge', ECharts)
+Vue.component('VueEchart', ECharts)

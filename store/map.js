@@ -34,10 +34,19 @@ export const mutations = {
   setSelected (state, selected) {
     if (selected === 'nacional') {
       state.selected = ['nacional']
-    } else if (!state.selected.includes(selected)) {
+    } else {
       // remove 'nacional' if it's in the array
       state.selected = state.selected.filter(s => s !== 'nacional')
-      state.selected.push(selected)
+      // if selected is already in the state.selected, remove it
+      if (state.selected.includes(selected)) {
+        state.selected = state.selected.filter(s => s !== selected)
+        console.log(state.selected)
+        if (state.selected.length === 0) {
+          state.selected = ['nacional']
+        }
+      } else {
+        state.selected.push(selected)
+      }
     }
   }
 }
