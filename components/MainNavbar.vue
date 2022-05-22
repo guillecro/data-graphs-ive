@@ -2,19 +2,13 @@
   <b-navbar
     type="is-primary"
   >
-    <!-- <template #brand>
-      <b-navbar-item tag="router-link" :to="{ path: '/' }">
-        <img
-          src="https://raw.githubusercontent.com/buefy/buefy/dev/static/img/buefy-logo.png"
-          alt="Lightweight UI components for Vue.js based on Bulma"
-        >
-      </b-navbar-item>
-    </template> -->
-    <template #start>
+    <template #brand>
       <b-navbar-item>
         <i class="fas fa-chart-pie"></i>
       </b-navbar-item>
-      <b-navbar-dropdown :label="selectedLabel">
+    </template>
+    <template #start>
+      <b-navbar-dropdown :label="selectedLabel" :collapsible="true">
         <b-navbar-item v-for="(state,index) in mapStates" :key="`nav-${index}`" @click="changeSelected(index)">
           {{ state }}
         </b-navbar-item>

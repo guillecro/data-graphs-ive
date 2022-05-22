@@ -14,7 +14,7 @@ export const mutations = {
   setMapSelected (state, mapSelected) {
     state.mapSelected = mapSelected
   },
-  setLoading (state, isLoading) {
+  setIsLoading (state, isLoading) {
     state.isLoading = isLoading
   }
 }

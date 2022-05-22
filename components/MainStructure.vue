@@ -1,17 +1,18 @@
 <template>
-  <div class="section ">
-    <div class="columns">
-      <div class="column">
-        <ArgentinaMap />
-      </div>
-      <div class="column" v-if="$fetchState.pending">
-        <div class="box">
-          Loading...
+  <div class="section">
+    <div class="container is-fluid">
+      <div class="columns">
+        <div class="column is-4">
+          <ArgentinaMap />
         </div>
-      </div>
-      <div class="column" v-else>
-        <div v-for="(graph,i) in graphs" :key="`graph-${i}`">
+        <div class="column is-4" v-if="$fetchState.pending">
+          <div class="box">
+            Loading...
+          </div>
+        </div>
+        <div class="column is-4" v-for="(graph,i) in graphs" :key="`graph-${i}`" v-else>
           <StatsContainer :graph="graph" />
+          <!-- <Tutorial /> -->
         </div>
       </div>
     </div>
@@ -26,6 +27,7 @@ export default {
   components: {
     ArgentinaMap
   },
+  fetchOnServer: false,
   async fetch () {
     try {
       // console.log(app)
@@ -38,11 +40,18 @@ export default {
         // eslint-disable-next-line prefer-const
         const graph = {}
         keys.forEach((k, i) => {
-          graph[k] = entry[i] !== '' ? entry[i] : null
+          if (k === 'cast_float') {
+            graph[k] = entry[i].split(',')
+          } else if (k === 'cast_int') {
+            graph[k] = entry[i].split(',')
+          } else {
+            graph[k] = entry[i] !== '' ? entry[i] : null
+          }
         })
         output.push(graph)
       })
       this.$store.commit('data/setIndex', output)
+      this.$store.commit('data/setIsLoading', false)
     } catch (err) {
       console.error(err)
       return null
