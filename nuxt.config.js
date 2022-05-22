@@ -72,7 +72,7 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
-    transpile: [/echarts/, /zrender/]
+    // transpile: [/echarts/, /zrender/]
   },
   'google-gtag': {
     id: process.env.GOOGLE_ANALYTICS_ID,
