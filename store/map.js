@@ -1,7 +1,8 @@
 
 export const state = () => ({
-  selected: 'nacional',
+  selected: ['nacional'],
   list: {
+    nacional: 'Todas las Jurisdicciones',
     caba: 'Ciudad Autónoma de Buenos Aires',
     pba: 'Buenos Aires',
     catamarca: 'Catamarca',
@@ -25,13 +26,18 @@ export const state = () => ({
     santa_fe: 'Santa Fe',
     santiago_del_estereo: 'Santiago del Estero',
     tierra_antartida: 'Tierra del Fuego, Antártida e Islas del Atlántico Sur',
-    tucuman: 'Tucumán',
-    nacional: 'Todas las Jurisdicciones'
+    tucuman: 'Tucumán'
   }
 })
 
 export const mutations = {
   setSelected (state, selected) {
-    state.selected = selected
+    if (selected === 'nacional') {
+      state.selected = ['nacional']
+    } else if (!state.selected.includes(selected)) {
+      // remove 'nacional' if it's in the array
+      state.selected = state.selected.filter(s => s !== 'nacional')
+      state.selected.push(selected)
+    }
   }
 }

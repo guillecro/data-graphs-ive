@@ -4,12 +4,12 @@
   >
     <template #brand>
       <b-navbar-item>
-        <i class="fas fa-chart-pie"></i>
+        <i class="fas fa-chart-pie" />
       </b-navbar-item>
     </template>
     <template #start>
       <b-navbar-dropdown :label="selectedLabel" :collapsible="true">
-        <b-navbar-item v-for="(state,index) in mapStates" :key="`nav-${index}`" @click="changeSelected(index)">
+        <b-navbar-item v-for="(state,index) in mapStates" :key="`nav-${index}`" :active="selected.includes(index)" @click="changeSelected(index)">
           {{ state }}
         </b-navbar-item>
       </b-navbar-dropdown>
@@ -31,7 +31,13 @@ export default {
       return this.$store.state.map.selected
     },
     selectedLabel () {
-      return this.mapStates[this.selected]
+      if (this.selected.length === 0) {
+        return 'Seleccionar'
+      } else if (this.selected.length === 1) {
+        return this.mapStates[this.selected[0]]
+      } else {
+        return `${this.selected.length} seleccionados`
+      }
     },
     mapStates () {
       return this.$store.state.map.list

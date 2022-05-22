@@ -20,7 +20,14 @@
       <h1 class="subtitle is-6 has-text-grey-light">
         Fecha de actualización: {{ graph.fecha_actualizacion }} <br> Fuente: {{ graph.fuente }}
       </h1>
-      <b-table :data="theData.values" narrowed hoverable bordered>
+      <b-table
+        :data="theData.values"
+        :default-sort="['ranking']"
+        default-sort-direction="asc"
+        :row-class="colorRow"
+        narrowed
+        hoverable
+      >
         <b-table-column v-slot="props" field="jurisdiccion" label="Jurisdiccion">
           {{ props.row.jurisdiccion || 'N/A' }}
         </b-table-column>
@@ -121,6 +128,9 @@ export default {
     selected () {
       return this.$store.state.map.selected
     },
+    selectedData () {
+      return this.theData.values.filter(d => this.selected.includes(d.jurisdiccion))
+    },
     googleSheetId () {
       return process.env.googleSheetId
     },
@@ -128,7 +138,20 @@ export default {
       return process.env.googleApiKey
     }
   },
+  watch: {
+    selected (newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this.prepareChart()
+      }
+    }
+  },
   methods: {
+    colorRow (row, index) {
+      if (this.selected.includes(row.id_jurisdiccion)) {
+        return 'is-info'
+      }
+      return ''
+    },
     prepareChart () {
       const serie = {
         type: 'pie',
@@ -143,7 +166,7 @@ export default {
         data: []
       }
       let maxValue = 0
-      if (this.selected === 'nacional') {
+      if (this.selected.length === 1 && this.selected[0] === 'nacional') {
         this.theData.values.forEach((v) => {
           if (v.id_jurisdiccion === 'nacional') {
             return
@@ -159,10 +182,35 @@ export default {
         serie.data = serie.data.sort((a, b) => {
           return b.value - a.value
         })
-        this.chartOptions.visualMap.max = maxValue
-        this.chartOptions.series.push(serie)
-        this.graphReady = true
+      } else {
+        this.theData.values.forEach((v) => {
+          if (v.id_jurisdiccion === 'nacional') {
+            return
+          }
+          if (!this.selected.includes(v.id_jurisdiccion)) {
+            return
+          }
+          const _aux = {}
+          _aux.value = v.cant_absoluta
+          if (v.cant_absoluta > maxValue) {
+            maxValue = v.cant_absoluta
+          }
+          _aux.name = v.jurisdiccion
+          serie.data.push(_aux)
+        })
+        serie.data = serie.data.sort((a, b) => {
+          return b.value - a.value
+        })
+        // maxValue = this.theData.values.find(v => v.id_jurisdiccion === this.selected).cant_absoluta
+        // const _aux = {
+        //   value: this.theData.values.find(v => v.id_jurisdiccion === this.selected).cant_absoluta,
+        //   name: this.theData.values.find(v => v.id_jurisdiccion === this.selected).jurisdiccion
+        // }
+        // serie.data.push(_aux)
       }
+      this.chartOptions.visualMap.max = maxValue
+      this.chartOptions.series = [serie]
+      this.graphReady = true
     }
   }
 }
