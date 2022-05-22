@@ -1,5 +1,5 @@
 export default {
-  mode: 'spa',
+  ssr: false,
   // Target: https://go.nuxtjs.dev/config-target
   target: 'static',
   router: {
