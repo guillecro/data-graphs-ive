@@ -7,7 +7,7 @@
       <i class="fas fa-exclamation-triangle fa-5x fa-sync" /> Error!
     </div>
     <div v-else>
-      <h1 class="title is-3 has-text-centered has-text-primary">
+      <h1 class="title is-3 mb-0 has-text-primary has-text-centered">
         {{ graph.nombre_visualizacion }}
       </h1>
       <!-- {{ graph }} -->
@@ -156,9 +156,9 @@ export default {
       const serie = {
         type: 'pie',
         colorBy: 'data',
-        radius: ['40%', '70%'],
+        radius: ['60%', '80%'],
         itemStyle: {
-          borderRadius: 10,
+          borderRadius: 6,
           borderColor: '#fff',
           borderWidth: 2,
           color: '#37BBED'
@@ -218,6 +218,6 @@ export default {
 
 <style lang="scss" scoped>
 .chart {
-  min-height: 600px;
+  min-height: 500px;
 }
 </style>

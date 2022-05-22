@@ -1,8 +1,8 @@
 <template>
-  <div class="section">
+  <div class="py-6">
     <div class="container is-fluid">
       <div class="columns">
-        <div class="column is-3">
+        <div class="column is-2">
           <ArgentinaMap />
         </div>
         <div class="column is-9">
