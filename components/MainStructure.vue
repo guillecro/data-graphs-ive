@@ -5,7 +5,7 @@
         <div class="column is-2">
           <ArgentinaMap />
         </div>
-        <div class="column is-9">
+        <div class="column is-10">
           <div class="columns">
             <div class="column is-12 chart is-flex is-justify-content-center is-align-items-center" v-if="$fetchState.pending">
               <i class="fas fa-spin fa-5x fa-sync" />

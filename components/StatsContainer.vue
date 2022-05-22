@@ -156,7 +156,7 @@ export default {
       const serie = {
         type: 'pie',
         colorBy: 'data',
-        radius: ['60%', '80%'],
+        radius: ['40%', '70%'],
         itemStyle: {
           borderRadius: 6,
           borderColor: '#fff',
