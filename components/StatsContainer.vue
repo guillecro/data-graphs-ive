@@ -1,10 +1,10 @@
 <template>
   <div class="">
-    <div v-if="$fetchState.pending">
-      <i class="fas fa-spin fa-sync" /> Cargando...
+    <div class="chart is-flex is-justify-content-center is-align-items-center" v-if="$fetchState.pending">
+      <i class="fas fa-spin fa-5x fa-sync" />
     </div>
-    <div v-else-if="$fetchState.error">
-      <i class="fas fa-exclamation-triangle" /> Error!
+    <div class="chart is-flex is-justify-content-center is-align-items-center" v-else-if="$fetchState.error">
+      <i class="fas fa-exclamation-triangle fa-5x fa-sync" /> Error!
     </div>
     <div v-else>
       <h1 class="title is-3 has-text-centered has-text-primary">

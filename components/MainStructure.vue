@@ -7,10 +7,11 @@
         </div>
         <div class="column is-9">
           <div class="columns">
-            <div v-if="$fetchState.pending" class="column is-12">
-              <div class="box has-text-centered">
-                <i class="fas fa-spin fa-sync" /> Cargando...
-              </div>
+            <div class="column is-12 chart is-flex is-justify-content-center is-align-items-center" v-if="$fetchState.pending">
+              <i class="fas fa-spin fa-5x fa-sync" />
+            </div>
+            <div class="column is-12 chart is-flex is-justify-content-center is-align-items-center" v-else-if="$fetchState.error">
+              <i class="fas fa-exclamation-triangle fa-5x fa-sync" /> Error!
             </div>
             <div v-for="(graph,i) in graphs" v-else :key="`graph-${i}`" class="column is-6">
               <StatsContainer :graph="graph" />
@@ -74,3 +75,9 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.chart {
+  min-height: 600px;
+}
+</style>
