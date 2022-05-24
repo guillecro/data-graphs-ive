@@ -7,6 +7,7 @@ import {
   CanvasRenderer
 } from 'echarts/renderers'
 import {
+  BarChart,
   PieChart,
   ParallelChart
 } from 'echarts/charts'
@@ -20,6 +21,7 @@ import {
 
 use([
   CanvasRenderer,
+  BarChart,
   PieChart,
   ParallelChart,
   GridComponent,

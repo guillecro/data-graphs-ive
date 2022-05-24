@@ -15,11 +15,7 @@
             </div>
             <div v-for="(graph,i) in graphs" v-else :key="`graph-${i}`" class="column" :class="getColumns">
               <StatsContainer :graph="graph" />
-              <!-- <Tutorial /> -->
             </div>
-            <!-- <div class="column is-12">
-              <ParallelRanking />
-            </div> -->
           </div>
         </div>
       </div>

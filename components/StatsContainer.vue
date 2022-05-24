@@ -12,7 +12,9 @@
       </h1>
       <!-- {{ graph }} -->
       <div v-if="graphReady">
-        <VueEchart class="chart" :option="chartOptions" :autoresize="true" />
+        <!-- <VueEchart class="chart" :option="chartOptions" :autoresize="true" /> -->
+        <GraphTorta v-if="graph.grafico_tipo == 'torta'" :data="theData" :graph="graph" />
+        <GraphBarraHorizontal v-if="graph.grafico_tipo == 'barra_horizontal'" :data="theData" :graph="graph" />
       </div>
       <div v-else class="chart is-flex is-justify-content-center is-align-items-center">
         <i class="fas fa-spin fa-5x fa-sync" />
@@ -30,46 +32,24 @@
           <u>Fecha de actualización</u>: {{ graph.fecha_actualizacion }}<br><u>Fuente</u>: {{ graph.fuente }}
         </h1>
         <div class="ml-4 is-700">
-          <a class="has-text-primary" @click="showTable = !showTable" style="white-space: nowrap;">
+          <a class="has-text-primary" style="white-space: nowrap;" @click="showTable = !showTable">
             {{ showTable ? 'Ocultar' : 'Mostrar' }}&nbsp;Tabla&nbsp;<i class="fas fa-fw" :class="{'fa-angle-down': !showTable, 'fa-angle-up': showTable}" />
           </a>
         </div>
       </div>
-      <b-table
-        v-show="showTable"
-        :data="theData.values"
-        :default-sort="['ranking']"
-        default-sort-direction="asc"
-        :row-class="colorRow"
-        narrowed
-        hoverable
-      >
-        <b-table-column v-slot="props" field="jurisdiccion" label="Jurisdiccion">
-          {{ props.row.jurisdiccion || 'N/A' }}
-        </b-table-column>
-        <b-table-column v-slot="props" field="cant_absoluta" numeric centered label="Cantidad">
-          {{ props.row.cant_absoluta || 'N/A' }}
-        </b-table-column>
-        <b-table-column v-slot="props" field="porcentaje" numeric centered label="Porcentaje">
-          <b>{{ props.row.cant_porcentaje || 'N/A' }} %</b>
-        </b-table-column>
-        <b-table-column
-          v-slot="props"
-          field="ranking"
-          numeric
-          centered
-          sortable
-          label="Ranking"
-        >
-          {{ props.row.ranking || 'N/A' }}
-        </b-table-column>
-      </b-table>
+      <TableData v-if="showTable" :graph="graph" :data="theData" />
     </div>
   </div>
 </template>
 
 <script>
+import GraphTorta from './graphs/Torta.vue'
+import GraphBarraHorizontal from './graphs/BarraHorizontal.vue'
 export default {
+  components: {
+    GraphTorta,
+    GraphBarraHorizontal
+  },
   props: {
     graph: {
       type: Object,
@@ -84,41 +64,41 @@ export default {
         labels: {},
         values: {}
       },
-      chartOptions: {
-        visualMap: {
-          show: false,
-          min: 0,
-          max: 0,
-          inRange: {
-            colorAlpha: [0.1, 1]
-          }
-        },
-        tooltip: {
-          padding: [4, 10],
-          borderWidth: 0,
-          textStyle: {
-            fontFamily: 'Encode Sans',
-            fontSize: 12,
-            color: '#FFF'
-          },
-          backgroundColor: '#9283BE',
-          extraCssText: 'box-shadow: none;',
-          formatter: (a) => {
-            // console.log()
-            return `<p class="has-text-centered has-text-weight-bold">${a.data.name}</p><p class="has-text-centered">${a.percent} %</p>`
-          }
-        },
-        toolbox: {
-          show: true,
-          feature: {
-            saveAsImage: {
-              show: true,
-              title: 'Guardar'
-            }
-          }
-        },
-        series: []
-      },
+      // chartOptions: {
+      //   visualMap: {
+      //     show: false,
+      //     min: 0,
+      //     max: 0,
+      //     inRange: {
+      //       colorAlpha: [0.1, 1]
+      //     }
+      //   },
+      //   tooltip: {
+      //     padding: [4, 10],
+      //     borderWidth: 0,
+      //     textStyle: {
+      //       fontFamily: 'Encode Sans',
+      //       fontSize: 12,
+      //       color: '#FFF'
+      //     },
+      //     backgroundColor: '#9283BE',
+      //     extraCssText: 'box-shadow: none;',
+      //     formatter: (a) => {
+      //       // console.log()
+      //       return `<p class="has-text-centered has-text-weight-bold">${a.data.name}</p><p class="has-text-centered">${a.percent} %</p>`
+      //     }
+      //   },
+      //   toolbox: {
+      //     show: true,
+      //     feature: {
+      //       saveAsImage: {
+      //         show: true,
+      //         title: 'Guardar'
+      //       }
+      //     }
+      //   },
+      //   series: []
+      // },
       graphReady: false
     }
   },
@@ -167,7 +147,7 @@ export default {
         id: this.graph.id_datos,
         fetched: true
       })
-      this.prepareChart()
+      this.graphReady = true
     } catch (err) {
       console.error(err)
       return null
@@ -188,79 +168,73 @@ export default {
     }
   },
   watch: {
-    selected (newVal, oldVal) {
-      if (newVal !== oldVal) {
-        this.prepareChart()
-      }
-    }
+    // selected (newVal, oldVal) {
+    //   if (newVal !== oldVal) {
+    //     this.prepareChart()
+    //   }
+    // }
   },
   methods: {
-    colorRow (row, index) {
-      if (this.selected.includes(row.id_jurisdiccion)) {
-        return 'is-info'
-      }
-      return ''
-    },
-    prepareChart () {
-      const serie = {
-        type: 'pie',
-        colorBy: 'data',
-        radius: ['40%', '70%'],
-        itemStyle: {
-          borderRadius: 6,
-          borderColor: '#fff',
-          borderWidth: 2,
-          color: '#37BBED'
-        },
-        data: []
-      }
-      let maxValue = 0
-      if (this.selected.length === 1 && this.selected[0] === 'nacional') {
-        this.theData.values.forEach((v) => {
-          if (v.id_jurisdiccion === 'nacional') {
-            return
-          }
-          const _aux = {}
-          _aux.value = v.cant_absoluta
-          if (v.cant_absoluta > maxValue) {
-            maxValue = v.cant_absoluta
-          }
-          _aux.name = v.jurisdiccion
-          serie.data.push(_aux)
-        })
-        serie.data = serie.data.sort((a, b) => {
-          return b.value - a.value
-        })
-      } else {
-        this.theData.values.forEach((v) => {
-          if (v.id_jurisdiccion === 'nacional') {
-            return
-          }
-          if (!this.selected.includes(v.id_jurisdiccion)) {
-            return
-          }
-          const _aux = {}
-          _aux.value = v.cant_absoluta
-          if (v.cant_absoluta > maxValue) {
-            maxValue = v.cant_absoluta
-          }
-          _aux.name = v.jurisdiccion
-          serie.data.push(_aux)
-        })
-        serie.data = serie.data.sort((a, b) => {
-          return b.value - a.value
-        })
-        // maxValue = this.theData.values.find(v => v.id_jurisdiccion === this.selected).cant_absoluta
-        // const _aux = {
-        //   value: this.theData.values.find(v => v.id_jurisdiccion === this.selected).cant_absoluta,
-        //   name: this.theData.values.find(v => v.id_jurisdiccion === this.selected).jurisdiccion
-        // }
-        // serie.data.push(_aux)
-      }
-      this.chartOptions.visualMap.max = maxValue
-      this.chartOptions.series = [serie]
-      this.graphReady = true
-    }
+    // prepareChart () {
+    //   const serie = {
+    //     type: 'pie',
+    //     colorBy: 'data',
+    //     radius: ['40%', '70%'],
+    //     itemStyle: {
+    //       borderRadius: 6,
+    //       borderColor: '#fff',
+    //       borderWidth: 2,
+    //       color: '#37BBED'
+    //     },
+    //     data: []
+    //   }
+    //   let maxValue = 0
+    //   if (this.selected.length === 1 && this.selected[0] === 'nacional') {
+    //     this.theData.values.forEach((v) => {
+    //       if (v.id_jurisdiccion === 'nacional') {
+    //         return
+    //       }
+    //       const _aux = {}
+    //       _aux.value = v[this.graph.grafico_valor]
+    //       if (v[this.graph.grafico_valor] > maxValue) {
+    //         maxValue = v[this.graph.grafico_valor]
+    //       }
+    //       _aux.name = v.jurisdiccion
+    //       serie.data.push(_aux)
+    //     })
+    //     serie.data = serie.data.sort((a, b) => {
+    //       return b.value - a.value
+    //     })
+    //   } else {
+    //     this.theData.values.forEach((v) => {
+    //       if (v.id_jurisdiccion === 'nacional') {
+    //         return
+    //       }
+    //       if (!this.selected.includes(v.id_jurisdiccion)) {
+    //         return
+    //       }
+    //       const _aux = {}
+    //       _aux.value = v[this.graph.grafico_valor]
+    //       if (v[this.graph.grafico_valor] > maxValue) {
+    //         maxValue = v[this.graph.grafico_valor]
+    //       }
+    //       _aux.name = v.jurisdiccion
+    //       serie.data.push(_aux)
+    //     })
+    //     serie.data = serie.data.sort((a, b) => {
+    //       return b.value - a.value
+    //     })
+    //     // maxValue = this.theData.values.find(v => v.id_jurisdiccion === this.selected)[this.graph.grafico_valor]
+    //     // const _aux = {
+    //     //   value: this.theData.values.find(v => v.id_jurisdiccion === this.selected)[this.graph.grafico_valor],
+    //     //   name: this.theData.values.find(v => v.id_jurisdiccion === this.selected).jurisdiccion
+    //     // }
+    //     // serie.data.push(_aux)
+    //   }
+    //   this.chartOptions.visualMap.max = maxValue
+    //   this.chartOptions.series = [serie]
+    //   this.graphReady = true
+    // }
   }
 }
 </script>
