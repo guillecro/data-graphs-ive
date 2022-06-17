@@ -51,11 +51,12 @@ export default {
     }
   },
   methods: {
-    isSelected (state) {
-      return this.selected.includes(state)
+    isSelected (jurisdiccion) {
+      return this.selected.includes(jurisdiccion)
     },
-    changeSelected (state) {
-      this.$store.commit('map/setSelected', state)
+    changeSelected (jurisdiccion) {
+      // this.$store.commit('map/setSelected', state)
+      this.$store.dispatch('map/setSelected', jurisdiccion)
     }
   }
 }

@@ -16,6 +16,20 @@
     </template>
 
     <template #end>
+      <b-navbar-item v-if="isLoading">
+        Cargando! <i class="fas fa-spin fa-sync" />
+      </b-navbar-item>
+      <b-navbar-item v-if="proMode" tag="div">
+        Modo Pro&nbsp;<i class="fas fa-hand-spock fa-lg" />
+      </b-navbar-item>
+      <b-navbar-dropdown :label="'Modo'" :collapsible="true">
+        <b-navbar-item @click="setProMode(false)">
+          Modo Simple
+        </b-navbar-item>
+        <b-navbar-item @click="setProMode(true)">
+          Modo Diego&nbsp;<i class="fas fa-hand-spock fa-lg" />
+        </b-navbar-item>
+      </b-navbar-dropdown>
       <b-navbar-dropdown :label="'Columnas'" :collapsible="true">
         <b-navbar-item @click="changeColumns(12)">
           Ancho completo
@@ -27,9 +41,6 @@
           Tres columnas
         </b-navbar-item>
       </b-navbar-dropdown>
-      <b-navbar-item v-if="isLoading">
-        Cargando! <i class="fas fa-spin fa-sync" />
-      </b-navbar-item>
     </template>
   </b-navbar>
 </template>
@@ -55,14 +66,20 @@ export default {
     },
     isLoading () {
       return this.$store.state.data.isLoading
+    },
+    proMode () {
+      return this.$store.state.system.proMode
     }
   },
   methods: {
-    changeSelected (state) {
-      this.$store.commit('map/setSelected', state)
+    changeSelected (juridiccion) {
+      this.$store.dispatch('map/setSelected', juridiccion)
     },
     changeColumns (columns) {
       this.$store.commit('system/setColumns', columns)
+    },
+    setProMode (val) {
+      this.$store.dispatch('system/setProMode', val)
     }
   }
 }

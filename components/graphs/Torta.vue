@@ -1,5 +1,5 @@
 <template>
-  <VueEchart v-if="graphReady" class="chart" :option="chartOptions" :autoresize="true" />
+  <VueEchart v-if="graphReady" class="chart" :option="chartOptions" :autoresize="true" @click="handleChartClickEvent" />
 </template>
 
 <script>
@@ -18,27 +18,26 @@ export default {
   data () {
     return {
       chartOptions: {
-        visualMap: {
-          show: false,
-          min: 0,
-          max: 0,
-          inRange: {
-            colorAlpha: [0.1, 1]
-          }
-        },
         tooltip: {
           padding: [4, 10],
           borderWidth: 0,
           textStyle: {
             fontFamily: 'Encode Sans',
-            fontSize: 12,
+            fontSize: 14,
             color: '#FFF'
           },
           backgroundColor: '#9283BE',
           extraCssText: 'box-shadow: none;',
           formatter: (a) => {
-            // console.log()
-            return `<p class="has-text-centered has-text-weight-bold">${a.data.name}</p><p class="has-text-centered">${a.percent} %</p>`
+            if (this.selected.length === 1 && this.selected.includes('nacional')) {
+              return `<p class="has-text-centered has-text-weight-bold my-0">${a.data.name}</p><p class="has-text-centered my-0">${a.percent} %</p>`
+            } else if (this.proMode) {
+              return `<p class="has-text-centered has-text-weight-bold">${a.data.name}</p><p class="has-text-centered">${a.percent} %</p>`
+            } else if (this.selected.includes(a.data.id_jurisdiccion)) {
+              return `<p class="has-text-centered has-text-weight-bold">${a.data.name}</p><p class="has-text-centered">${a.percent} %</p>`
+            } else {
+              return null
+            }
           }
         },
         toolbox: {
@@ -61,6 +60,9 @@ export default {
     },
     selectedData () {
       return this.data.values.filter(d => this.selected.includes(d.jurisdiccion))
+    },
+    proMode () {
+      return this.$store.state.system.proMode
     }
   },
   watch: {
@@ -74,7 +76,78 @@ export default {
     this.prepareChart()
   },
   methods: {
+    handleChartClickEvent (event) {
+      if (!this.proMode) {
+        if (event.data && event.data && event.data.id_jurisdiccion) {
+          this.$store.dispatch('map/setSelected', event.data.id_jurisdiccion)
+        }
+      }
+    },
     prepareChart () {
+      if (this.proMode) {
+        this.createSerieProMode()
+      } else {
+        this.createSerie()
+      }
+    },
+    createSerie () {
+      const serie = {
+        type: 'pie',
+        colorBy: 'data',
+        radius: ['40%', '70%'],
+        itemStyle: {
+          borderRadius: 6,
+          borderColor: '#fff',
+          borderWidth: 2
+          // color: '#37BBED'
+        },
+        label: {
+          fontFamily: 'Encode Sans'
+        },
+        data: []
+      }
+      let maxValue = 0
+      this.data.values.forEach((jurisdiccionData) => {
+        // if the value is the jurisdiction "nacional" and the graph should not include it, skip it
+        if (!this.graph.include_nacional && jurisdiccionData.id_jurisdiccion === 'nacional') {
+          return
+        }
+        // if this.graph.grafico_valor is not a number, skip it
+        if (isNaN(jurisdiccionData[this.graph.grafico_valor])) {
+          return
+        }
+        // now we build the object to be added to the serie
+        // a data is an object with "name" and
+        const _aux = {}
+        _aux.id_jurisdiccion = jurisdiccionData.id_jurisdiccion
+        _aux.value = jurisdiccionData[this.graph.grafico_valor]
+
+        if (jurisdiccionData[this.graph.grafico_valor] > maxValue) {
+          maxValue = jurisdiccionData[this.graph.grafico_valor]
+        }
+        _aux.name = jurisdiccionData.jurisdiccion
+        if (this.selected.includes('nacional')) {
+          _aux.itemStyle = {
+            color: '#37BBED'
+          }
+        } else if (jurisdiccionData.id_jurisdiccion === this.selected[0]) {
+          _aux.itemStyle = {
+            color: '#37BBED'
+          }
+        } else {
+          _aux.itemStyle = {
+            color: '#cacaca'
+          }
+        }
+        serie.data.push(_aux)
+      })
+      serie.data = serie.data.sort((a, b) => {
+        return b.value - a.value
+      })
+      this.chartOptions.series = [serie]
+      this.graphReady = true
+    },
+    createSerieProMode () {
       const serie = {
         type: 'pie',
         colorBy: 'data',
@@ -87,40 +160,43 @@ export default {
         },
         data: []
       }
+      const visualMap = {
+        show: false,
+        min: 0,
+        max: 0,
+        inRange: {
+          colorAlpha: [0.2, 1]
+        }
+      }
       let maxValue = 0
       if (this.selected.length === 1 && this.selected[0] === 'nacional') {
-        this.data.values.forEach((v) => {
-          if (v.id_jurisdiccion === 'nacional') {
+        maxValue = this.getMaxValueInAllJurisdicciones()
+        // if the selected array is just "nacional" we need to add all the jurisdictions
+        this.data.values.forEach((jurisdiccionData) => {
+          // if the value is the jurisdiction "nacional" and the graph should not include it, skip it
+          if (!this.graph.include_nacional && jurisdiccionData.id_jurisdiccion === 'nacional') {
             return
           }
-          const _aux = {}
-          _aux.value = v[this.graph.grafico_valor]
-          if (v[this.graph.grafico_valor] > maxValue) {
-            maxValue = v[this.graph.grafico_valor]
+          // if this.graph.grafico_valor is not a number, skip it
+          if (isNaN(jurisdiccionData[this.graph.grafico_valor])) {
+            return
           }
-          _aux.name = v.jurisdiccion
+          // now we build the object to be added to the serie
+          // a data is an object with "name" and
+          const _aux = {}
+          _aux.id_jurisdiccion = jurisdiccionData.id_jurisdiccion
+          _aux.value = jurisdiccionData[this.graph.grafico_valor]
+          _aux.name = jurisdiccionData.jurisdiccion
           serie.data.push(_aux)
         })
         serie.data = serie.data.sort((a, b) => {
           return b.value - a.value
         })
       } else {
-        this.data.values.forEach((v) => {
-          if (v.id_jurisdiccion === 'nacional') {
-            return
-          }
-          if (!this.selected.includes(v.id_jurisdiccion)) {
-            return
-          }
-          const _aux = {}
-          _aux.value = v[this.graph.grafico_valor]
-          if (v[this.graph.grafico_valor] > maxValue) {
-            maxValue = v[this.graph.grafico_valor]
-          }
-          _aux.name = v.jurisdiccion
-          serie.data.push(_aux)
-        })
-        serie.data = serie.data.sort((a, b) => {
+        // add to serie.data only the data from the selected jurisdictions array
+        maxValue = this.getMaxValueInSelectedJurisdicciones()
+        const _seriesData = this.filterDataBySelectedJurisdicciones(maxValue)
+        serie.data = _seriesData.sort((a, b) => {
           return b.value - a.value
         })
         // maxValue = this.data.values.find(v => v.id_jurisdiccion === this.selected)[this.graph.grafico_valor]
@@ -130,9 +206,49 @@ export default {
         // }
         // serie.data.push(_aux)
       }
-      this.chartOptions.visualMap.max = maxValue
+      visualMap.max = maxValue
+      this.chartOptions.visualMap = visualMap
       this.chartOptions.series = [serie]
       this.graphReady = true
+    },
+    filterDataBySelectedJurisdicciones () {
+      const seriesData = []
+      this.data.values.forEach((v) => {
+        if (!this.graph.include_nacional && v.id_jurisdiccion === 'nacional') {
+          return
+        }
+        if (!this.selected.includes(v.id_jurisdiccion)) {
+          return
+        }
+        const _aux = {}
+        _aux.value = v[this.graph.grafico_valor]
+        _aux.name = v.jurisdiccion
+        seriesData.push(_aux)
+      })
+      return seriesData
+    },
+    getMaxValueInSelectedJurisdicciones () {
+      let _maxValue = 0
+      this.selected.forEach((idJurisdiccion) => {
+        const _aux = this.data.values.find(jurisdiccionData => jurisdiccionData.id_jurisdiccion === idJurisdiccion)[this.graph.grafico_valor]
+        if (_aux > _maxValue) {
+          _maxValue = _aux
+        }
+      })
+      return _maxValue
+    },
+    getMaxValueInAllJurisdicciones () {
+      let _maxValue = 0
+      this.data.values.forEach((jurisdiccionData) => {
+        // if the value is the jurisdiction "nacional" and the graph should not include it, skip it
+        if (!this.graph.include_nacional && jurisdiccionData.id_jurisdiccion === 'nacional') {
+          return
+        }
+        if (jurisdiccionData[this.graph.grafico_valor] > _maxValue) {
+          _maxValue = jurisdiccionData[this.graph.grafico_valor]
+        }
+      })
+      return _maxValue
     }
   }
 }

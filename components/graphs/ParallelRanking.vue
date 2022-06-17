@@ -48,7 +48,6 @@ export default {
   },
   watch: {
     countData (newVal, oldVal) {
-      console.log(newVal, oldVal)
       if (newVal !== oldVal) {
         this.prepareChart()
       }

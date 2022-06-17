@@ -48,17 +48,24 @@ export default {
             graph[k] = entry[i].split(',')
           } else if (k === 'cast_int') {
             graph[k] = entry[i].split(',')
+          } else if (k === 'include_nacional') {
+            console.log(k)
+            console.log(entry[i])
+            // if entry[i] is "TRUE" save as boolean
+            graph[k] = entry[i] === 'TRUE'
           } else {
             graph[k] = entry[i] !== '' ? entry[i] : null
           }
         })
-        graph.fetched = false
+        // create fake id with random number
+        graph.id = `graph-${Math.floor(Math.random() * 1000000)}`
+        graph.fetched = true
         output.push(graph)
       })
       this.$store.commit('data/setIndex', output)
       this.$store.commit('data/setIsLoading', false)
     } catch (err) {
-      console.error(err)
+      this.$buefy.dialog.alert(`Error al obtener los datos: ${err.message}`)
       return null
     }
   },

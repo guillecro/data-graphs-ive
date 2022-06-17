@@ -7,8 +7,11 @@
       <i class="fas fa-exclamation-triangle fa-5x fa-sync" /> Error!
     </div>
     <div v-else>
-      <h1 class="title is-3 mb-0 has-text-primary has-text-centered is-700">
+      <h1 class="title is-3 has-text-primary has-text-centered is-700">
         {{ graph.nombre_visualizacion }}
+      </h1>
+      <h1 class="subtitle is-5 mb-0 has-text-dark has-text-centered">
+        {{ graph.subtitulo_vizualizacion }}
       </h1>
       <!-- {{ graph }} -->
       <div v-if="graphReady">
@@ -29,7 +32,7 @@
           <i class="fas fa-table-list fa-fw" />&nbsp;Tabla
         </button> -->
         <h1 class="subtitle is-6 has-text-grey-light is-flex-grow-1 m-0">
-          <u>Fecha de actualización</u>: {{ graph.fecha_actualizacion }}<br><u>Fuente</u>: {{ graph.fuente }}
+          Fuente: {{ graph.fuente }}<br>Fecha de actualización: {{ graph.fecha_actualizacion }}
         </h1>
         <div class="ml-4 is-700">
           <a class="has-text-primary" style="white-space: nowrap;" @click="showTable = !showTable">
@@ -58,7 +61,7 @@ export default {
   },
   data () {
     return {
-      showTable: false,
+      showTable: true,
       theData: {
         keys: [],
         labels: {},
@@ -120,11 +123,12 @@ export default {
         // eslint-disable-next-line prefer-const
         const data = {}
         keys.forEach((k, i) => {
-          if (['-', 'N/A', ''].includes(entry[i])) {
+          if ([''].includes(entry[i])) {
             data[k] = null
+          } else if (['...', '///'].includes(entry[i])) {
+            data[k] = entry[i]
           } else if (this.graph.cast_int.includes(k)) {
             // remove dot
-
             data[k] = parseInt(entry[i].replace('.', '').replace(',', '.'))
           } else if (this.graph.cast_float.includes(k)) {
             data[k] = parseFloat(entry[i].replace('.', '').replace(',', '.'))
@@ -149,7 +153,8 @@ export default {
       })
       this.graphReady = true
     } catch (err) {
-      console.error(err)
+      this.$buefy.dialog.alert(`Error al obtener los datos: ${err.message}`)
+      // console.error(err)
       return null
     }
   },
