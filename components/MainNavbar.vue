@@ -22,14 +22,14 @@
       <b-navbar-item v-if="proMode" tag="div">
         Modo Pro&nbsp;<i class="fas fa-hand-spock fa-lg" />
       </b-navbar-item>
-      <b-navbar-dropdown :label="'Modo'" :collapsible="true">
+      <!-- <b-navbar-dropdown :label="'Modo'" :collapsible="true">
         <b-navbar-item @click="setProMode(false)">
           Modo Simple
         </b-navbar-item>
         <b-navbar-item @click="setProMode(true)">
           Modo Diego&nbsp;<i class="fas fa-hand-spock fa-lg" />
         </b-navbar-item>
-      </b-navbar-dropdown>
+      </b-navbar-dropdown> -->
       <b-navbar-dropdown :label="'Columnas'" :collapsible="true">
         <b-navbar-item @click="changeColumns(12)">
           Ancho completo
