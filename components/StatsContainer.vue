@@ -7,7 +7,7 @@
       <i class="fas fa-exclamation-triangle fa-5x fa-sync" /> Error!
     </div>
     <div v-else>
-      <h1 class="title is-3 has-text-primary has-text-centered is-700">
+      <h1 class="title is-4 has-text-primary has-text-centered is-700">
         {{ graph.nombre_visualizacion }}
       </h1>
       <h1 class="subtitle is-5 mb-0 has-text-dark has-text-centered">
@@ -27,20 +27,26 @@
           1
         </div>
       </div> -->
-      <div class="is-flex is-justify-content-space-between is-align-items-center my-3">
-        <!-- <button @click="showTable = !showTable" class="button is-primary ml-4" :class="{'is-outlined': !showTable}">
-          <i class="fas fa-table-list fa-fw" />&nbsp;Tabla
-        </button> -->
-        <h1 class="subtitle is-6 has-text-grey-light is-flex-grow-1 m-0">
-          Fuente: {{ graph.fuente }}<br>Fecha de actualización: {{ graph.fecha_actualizacion }}
-        </h1>
-        <div class="ml-4 is-700">
-          <a class="has-text-primary" style="white-space: nowrap;" @click="showTable = !showTable">
-            {{ showTable ? 'Ocultar' : 'Mostrar' }}&nbsp;Tabla&nbsp;<i class="fas fa-fw" :class="{'fa-angle-down': !showTable, 'fa-angle-up': showTable}" />
-          </a>
+      <h1 class="subtitle is-6 has-text-grey-light is-flex-grow-1 mb-5">
+        Fuente: {{ graph.fuente }}<br>Fecha de actualización: {{ graph.fecha_actualizacion }}
+      </h1>
+      <div class="panel is-primary">
+        <div class="panel-heading">
+          <div class="panel-title is-flex is-justify-content-space-between is-align-items-center">
+            <div>
+              <i class="fas fa-table" />&nbsp;Tabla
+            </div>
+            <a class="has-text-white" style="white-space: nowrap;" @click="showTable = !showTable">
+              {{ showTable ? 'Ocultar' : 'Mostrar' }}&nbsp;<i class="fas fa-fw" :class="{'fa-angle-down': !showTable, 'fa-angle-up': showTable}" />
+            </a>
+          </div>
+        </div>
+        <div v-if="showTable" class="panel-block px-0">
+          <div class="container">
+            <TableData :graph="graph" :data="theData" />
+          </div>
         </div>
       </div>
-      <TableData v-if="showTable" :graph="graph" :data="theData" />
     </div>
   </div>
 </template>
@@ -113,10 +119,19 @@ export default {
       const response = await this.$axios.get(`https://sheets.googleapis.com/v4/spreadsheets/${this.googleSheetId}/values/${this.graph.id_datos}?key=${this.googleApiKey}`)
       const keys = response.data.values[0]
       const labels = response.data.values[1]
-      const values = response.data.values.slice(2)
+      const labelsInfo = response.data.values[2]
+      const values = response.data.values.slice(3)
       const theLabels = {}
       keys.forEach((key, index) => {
         theLabels[key] = labels[index]
+      })
+      const theLabelsInfo = {}
+      keys.forEach((key, index) => {
+        if (['', '-'].includes(labelsInfo[index])) {
+          theLabelsInfo[key] = null
+        } else {
+          theLabelsInfo[key] = labelsInfo[index]
+        }
       })
       const theValues = []
       values.forEach((entry) => {
@@ -141,6 +156,7 @@ export default {
       this.theData = {
         keys,
         labels: theLabels,
+        labelsInfo: theLabelsInfo,
         values: theValues
       }
       this.$store.commit('data/addData', {

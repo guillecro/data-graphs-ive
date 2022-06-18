@@ -15,33 +15,41 @@
     :row-class="colorRow"
     narrowed
     hoverable
+    fullwidth
   >
     <b-table-column
       v-for="column in columns"
       :key="`${graph.id}-${column.field}`"
-      v-slot="props"
       :field="column.field"
       :label="column.label"
       :numeric="column.numeric"
       :centered="column.centered"
       :sortable="column.sortable"
     >
-      {{ isNumericAndCanBeShown(column, props.row) ? formatNumber(column, props.row) : null }}
-      {{ isText(column) ? props.row[column.field] : null }}
-      <b-tooltip
-        v-if="column.numeric && dataDoesntApply(column, props.row)"
-        multilined
-        label="Dato que no corresponde presentar debido a la naturaleza de las cosas o del cálculo"
-      >
-        <span class="has-text-grey has-text-weight-bold">///</span>
-      </b-tooltip>
-      <b-tooltip
-        v-if="column.numeric && dataUnavailable(column, props.row)"
-        multilined
-        label="Dato no disponible a la fecha de presentación de los resultados"
-      >
-        <span class="has-text-grey has-text-weight-bold">···</span>
-      </b-tooltip>
+      <template v-slot:header="{ column }">
+        <b-tooltip v-if="getLabelInfo(column.field)" :label="getLabelInfo(column.field)" append-to-body dashed position="is-top">
+          {{ column.label }}
+        </b-tooltip>
+        <span v-else>{{ column.label }}</span>
+      </template>
+      <template #default="props">
+        {{ isNumericAndCanBeShown(column, props.row) ? formatNumber(column, props.row) : null }}
+        {{ isText(column) ? props.row[column.field] : null }}
+        <b-tooltip
+          v-if="column.numeric && dataDoesntApply(column, props.row)"
+          multilined
+          label="Dato que no corresponde presentar debido a la naturaleza de las cosas o del cálculo"
+        >
+          <span class="has-text-grey has-text-weight-bold">///</span>
+        </b-tooltip>
+        <b-tooltip
+          v-if="column.numeric && dataUnavailable(column, props.row)"
+          multilined
+          label="Dato no disponible a la fecha de presentación de los resultados"
+        >
+          <span class="has-text-grey has-text-weight-bold">···</span>
+        </b-tooltip>
+      </template>
     </b-table-column>
     <!-- <template #footer>
       Total nacional: {{ totalNacional[graph.grafico_valor] }}
@@ -139,6 +147,9 @@ export default {
     }
   },
   methods: {
+    getLabelInfo (field) {
+      return this.data.labelsInfo[field]
+    },
     colorRow (row, index) {
       if (this.selected.includes(row.id_jurisdiccion)) {
         return 'is-info'
