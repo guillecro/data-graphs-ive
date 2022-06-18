@@ -26,8 +26,15 @@
       :centered="column.centered"
       :sortable="column.sortable"
     >
-      <template v-slot:header="{ column }">
-        <b-tooltip v-if="getLabelInfo(column.field)" :label="getLabelInfo(column.field)" append-to-body dashed position="is-top">
+      <template #header="{ column }">
+        <b-tooltip
+          v-if="getLabelInfo(column.field)"
+          :label="getLabelInfo(column.field)"
+          append-to-body
+          dashed
+          multilined
+          position="is-bottom"
+        >
           {{ column.label }}
         </b-tooltip>
         <span v-else>{{ column.label }}</span>
@@ -40,20 +47,17 @@
           multilined
           label="Dato que no corresponde presentar debido a la naturaleza de las cosas o del cálculo"
         >
-          <span class="has-text-grey has-text-weight-bold">///</span>
+          <span class="has-text-grey">///</span>
         </b-tooltip>
         <b-tooltip
           v-if="column.numeric && dataUnavailable(column, props.row)"
           multilined
           label="Dato no disponible a la fecha de presentación de los resultados"
         >
-          <span class="has-text-grey has-text-weight-bold">···</span>
+          <span class="has-text-grey">···</span>
         </b-tooltip>
       </template>
     </b-table-column>
-    <!-- <template #footer>
-      Total nacional: {{ totalNacional[graph.grafico_valor] }}
-    </template> -->
   </b-table>
 </template>
 
@@ -160,7 +164,7 @@ export default {
       if (this.graph.cast_int.includes(column.field)) {
         return data[column.field].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',').replace(',', '.')
       } if (this.graph.cast_float.includes(column.field)) {
-        const _aux = data[column.field].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+        const _aux = data[column.field].toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
         // split decimal
         const _aux2 = _aux.split('.')
         if (_aux2.length > 1) {

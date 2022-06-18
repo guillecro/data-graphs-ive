@@ -32,7 +32,7 @@
       </h1>
       <div class="panel is-primary">
         <div class="panel-heading">
-          <div class="panel-title is-flex is-justify-content-space-between is-align-items-center">
+          <div class="panel-title has-text-weight-normal is-flex is-justify-content-space-between is-align-items-center">
             <div>
               <i class="fas fa-table" />&nbsp;Tabla
             </div>
@@ -205,7 +205,7 @@ export default {
     //       borderRadius: 6,
     //       borderColor: '#fff',
     //       borderWidth: 2,
-    //       color: '#37BBED'
+    //       color: '#8D80B9'
     //     },
     //     data: []
     //   }

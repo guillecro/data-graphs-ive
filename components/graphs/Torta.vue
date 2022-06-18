@@ -18,6 +18,12 @@ export default {
   data () {
     return {
       chartOptions: {
+        aria: {
+          enabled: true,
+          decal: {
+            show: true
+          }
+        },
         tooltip: {
           padding: [4, 10],
           borderWidth: 0,
@@ -99,7 +105,10 @@ export default {
           borderRadius: 6,
           borderColor: '#fff',
           borderWidth: 2
-          // color: '#37BBED'
+          // color: '#8D80B9'
+        },
+        emphasis: {
+          focus: 'self'
         },
         label: {
           fontFamily: 'Encode Sans'
@@ -126,18 +135,34 @@ export default {
           maxValue = jurisdiccionData[this.graph.grafico_valor]
         }
         _aux.name = jurisdiccionData.jurisdiccion
-        if (this.selected.includes('nacional')) {
+        if (this.selected.length === 1 && this.selected.includes('nacional')) {
           _aux.itemStyle = {
-            color: '#37BBED'
+            color: '#8D80B9',
+            decal: {
+              symbol: 'none'
+            }
           }
         } else if (jurisdiccionData.id_jurisdiccion === this.selected[0]) {
           _aux.itemStyle = {
-            color: '#37BBED'
+            color: '#8D80B9',
+            decal: {
+              symbol: 'none'
+            }
           }
         } else {
           _aux.itemStyle = {
-            color: '#cacaca'
+            color: '#cacaca',
+            decal: {
+              symbol: 'none'
+            }
           }
+        }
+        if (jurisdiccionData.id_jurisdiccion === 'nacional') {
+          _aux.itemStyle.decal.symbol = 'rect'
+          _aux.itemStyle.decal.dashArrayX = [1, 0]
+          _aux.itemStyle.decal.dashArrayY = [2, 3]
+          _aux.itemStyle.decal.symbolSize = 1
+          _aux.itemStyle.decal.rotation = Math.PI / 4
         }
         serie.data.push(_aux)
       })
@@ -156,7 +181,7 @@ export default {
           borderRadius: 6,
           borderColor: '#fff',
           borderWidth: 2,
-          color: '#37BBED'
+          color: '#8D80B9'
         },
         data: []
       }

@@ -11,7 +11,7 @@ export default {
   data () {
     return {
       chartOptions: {
-        color: ['#37BBED'],
+        color: ['#8D80B9'],
         parallelAxis: [
           // { dim: 0, name: 'Price' },
           // { dim: 1, name: 'Net Weight' },

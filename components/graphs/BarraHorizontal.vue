@@ -70,7 +70,13 @@ export default {
             }
           }
         },
-        color: '#37BBED',
+        color: '#8D80B9',
+        aria: {
+          enabled: true,
+          decal: {
+            show: true
+          }
+        },
         grid: {
           containLabel: true
         },
@@ -171,16 +177,32 @@ export default {
         _aux.id_jurisdiccion = jurisdiccionData.id_jurisdiccion
         if (this.selected.length === 1 && this.selected.includes('nacional')) {
           _aux.itemStyle = {
-            color: '#37BBED'
+            color: '#8D80B9',
+            decal: {
+              symbol: 'none'
+            }
           }
         } else if (this.selected.includes(jurisdiccionData.id_jurisdiccion)) {
           _aux.itemStyle = {
-            color: '#37BBED'
+            color: '#8D80B9',
+            decal: {
+              symbol: 'none'
+            }
           }
         } else {
           _aux.itemStyle = {
-            color: '#cacaca'
+            color: '#cacaca',
+            decal: {
+              symbol: 'none'
+            }
           }
+        }
+        if (jurisdiccionData.id_jurisdiccion === 'nacional') {
+          _aux.itemStyle.decal.symbol = 'rect'
+          _aux.itemStyle.decal.dashArrayX = [1, 0]
+          _aux.itemStyle.decal.dashArrayY = [2, 3]
+          _aux.itemStyle.decal.symbolSize = 1
+          _aux.itemStyle.decal.rotation = Math.PI / 4
         }
         _theData.xValues.push(_aux)
       })
