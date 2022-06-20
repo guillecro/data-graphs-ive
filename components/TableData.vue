@@ -13,6 +13,8 @@
     :default-sort="defaultSort"
     :default-sort-direction="defaultSortDirection"
     :row-class="colorRow"
+    icon-pack="fas"
+    sort-icon="fa-arrow-up"
     narrowed
     hoverable
     fullwidth
@@ -25,6 +27,7 @@
       :numeric="column.numeric"
       :centered="column.centered"
       :sortable="column.sortable"
+      :custom-sort="column.customSort || null"
     >
       <template #header="{ column }">
         <b-tooltip
@@ -40,21 +43,27 @@
         <span v-else>{{ column.label }}</span>
       </template>
       <template #default="props">
-        {{ isNumericAndCanBeShown(column, props.row) ? formatNumber(column, props.row) : null }}
-        {{ isText(column) ? props.row[column.field] : null }}
+        <span :class="{'has-text-weight-bold': isNacional(column, props.row)}">
+          {{ isNumericAndCanBeShown(column, props.row) ? formatNumber(column, props.row) : null }}
+          {{ isText(column) ? props.row[column.field] : null }}
+        </span>
         <b-tooltip
           v-if="column.numeric && dataDoesntApply(column, props.row)"
+          type="is-primary is-light"
+          position="is-left"
           multilined
           label="Dato que no corresponde presentar debido a la naturaleza de las cosas o del cálculo"
         >
-          <span class="has-text-grey">///</span>
+          <span class="has-text-grey"> /// </span>
         </b-tooltip>
         <b-tooltip
           v-if="column.numeric && dataUnavailable(column, props.row)"
+          type="is-primary is-light"
+          position="is-left"
           multilined
           label="Dato no disponible a la fecha de presentación de los resultados"
         >
-          <span class="has-text-grey">···</span>
+          <span class="has-text-grey "> ··· </span>
         </b-tooltip>
       </template>
     </b-table-column>
@@ -110,6 +119,58 @@ export default {
           centered: this.graph.cast_int.includes(label) || this.graph.cast_float.includes(label),
           sortable: this.graph.table_sortable.includes(label)
         }
+        // special column: jurisdiccion
+        if (label === 'jurisdiccion') {
+          theColumn.customSort = (a, b, isAsc) => {
+            // if a.id_jurisdiccion is "nacional" it always goes to the bottom
+            // if (a.id_jurisdiccion === 'nacional') {
+            //   return 1
+            // }
+            // if (b.id_jurisdiccion === 'nacional') {
+            //   return -1
+            // }
+            // if isAsc true
+            // a < b
+            // if isAsc false
+            // a > b
+            if (isAsc) {
+              return a.nro_orden - b.nro_orden
+            } else {
+              return b.nro_orden - a.nro_orden
+            }
+          }
+        } else if (theColumn.sortable) {
+          theColumn.customSort = (a, b, isAsc) => {
+            // if (a[label] === null && a.id_jurisdiccion !== 'nacional' && b.id_jurisdiccion === 'nacional') {
+            //   console.log('A')
+            //   return 2
+            // }
+            // if (b[label] === null && b.id_jurisdiccion !== 'nacional' && a.id_jurisdiccion === 'nacional') {
+            //   console.log('B')
+            //   return -2
+            // }
+            if (a[label] === null && b[label] !== null) {
+              return 1
+            }
+            if (b[label] === null && a[label] !== null) {
+              return -1
+            }
+            if (a[label] === null && a.id_jurisdiccion === 'nacional') {
+              console.log('C')
+              return 1
+            }
+            if (b[label] === null && b.id_jurisdiccion === 'nacional') {
+              console.log('D')
+              return -1
+            }
+            if (isAsc) {
+              return a[label] - b[label]
+            } else {
+              return b[label] - a[label]
+            }
+          }
+        }
+
         // if (theColumn.sortable && theColumn.numeric) {
         //   theColumn.customSort = (a, b, isAsc) => {
         //     // equal items sort equally
@@ -162,7 +223,7 @@ export default {
     },
     formatNumber (column, data) {
       if (this.graph.cast_int.includes(column.field)) {
-        return data[column.field].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',').replace(',', '.')
+        return data[column.field].toString().replaceAll(/\B(?=(\d{3})+(?!\d))/g, ',').replaceAll(',', '.')
       } if (this.graph.cast_float.includes(column.field)) {
         const _aux = data[column.field].toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
         // split decimal
@@ -183,6 +244,13 @@ export default {
     },
     isText (column, data) {
       if (!column.numeric) {
+        return true
+      } else {
+        return false
+      }
+    },
+    isNacional (column, data) {
+      if (data.id_jurisdiccion === 'nacional') {
         return true
       } else {
         return false

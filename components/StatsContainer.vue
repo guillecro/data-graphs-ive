@@ -144,9 +144,9 @@ export default {
             data[k] = entry[i]
           } else if (this.graph.cast_int.includes(k)) {
             // remove dot
-            data[k] = parseInt(entry[i].replace('.', '').replace(',', '.'))
+            data[k] = parseInt(entry[i].replaceAll('.', '').replace(',', '.'))
           } else if (this.graph.cast_float.includes(k)) {
-            data[k] = parseFloat(entry[i].replace('.', '').replace(',', '.'))
+            data[k] = parseFloat(entry[i].replaceAll('.', '').replace(',', '.'))
           } else {
             data[k] = entry[i]
           }

@@ -200,9 +200,9 @@ export default {
         if (jurisdiccionData.id_jurisdiccion === 'nacional') {
           _aux.itemStyle.decal.symbol = 'rect'
           _aux.itemStyle.decal.dashArrayX = [1, 0]
-          _aux.itemStyle.decal.dashArrayY = [2, 3]
+          _aux.itemStyle.decal.dashArrayY = [1, 2.5]
           _aux.itemStyle.decal.symbolSize = 1
-          _aux.itemStyle.decal.rotation = Math.PI / 4
+          _aux.itemStyle.decal.rotation = Math.PI / 5
         }
         _theData.xValues.push(_aux)
       })
