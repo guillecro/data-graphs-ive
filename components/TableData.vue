@@ -29,7 +29,7 @@
       :sortable="column.sortable"
       :custom-sort="column.customSort || null"
     >
-      <template #header="{ column }">
+      <template #header>
         <b-tooltip
           v-if="getLabelInfo(column.field)"
           :label="getLabelInfo(column.field)"
@@ -37,6 +37,7 @@
           dashed
           multilined
           position="is-bottom"
+          type="is-light"
         >
           {{ column.label }}
         </b-tooltip>
@@ -156,11 +157,9 @@ export default {
               return -1
             }
             if (a[label] === null && a.id_jurisdiccion === 'nacional') {
-              console.log('C')
               return 1
             }
             if (b[label] === null && b.id_jurisdiccion === 'nacional') {
-              console.log('D')
               return -1
             }
             if (isAsc) {

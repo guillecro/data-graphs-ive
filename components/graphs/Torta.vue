@@ -134,7 +134,7 @@ export default {
         if (jurisdiccionData[this.graph.grafico_valor] > maxValue) {
           maxValue = jurisdiccionData[this.graph.grafico_valor]
         }
-        _aux.name = jurisdiccionData.jurisdiccion
+        _aux.name = jurisdiccionData.jurisdiccion_grafico
         if (this.selected.length === 1 && this.selected.includes('nacional')) {
           _aux.itemStyle = {
             color: '#8D80B9',
@@ -211,7 +211,7 @@ export default {
           const _aux = {}
           _aux.id_jurisdiccion = jurisdiccionData.id_jurisdiccion
           _aux.value = jurisdiccionData[this.graph.grafico_valor]
-          _aux.name = jurisdiccionData.jurisdiccion
+          _aux.name = jurisdiccionData.jurisdiccion_grafico
           serie.data.push(_aux)
         })
         serie.data = serie.data.sort((a, b) => {
@@ -247,7 +247,7 @@ export default {
         }
         const _aux = {}
         _aux.value = v[this.graph.grafico_valor]
-        _aux.name = v.jurisdiccion
+        _aux.name = v.jurisdiccion_grafico
         seriesData.push(_aux)
       })
       return seriesData

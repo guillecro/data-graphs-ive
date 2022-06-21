@@ -170,7 +170,7 @@ export default {
       })
       // sort the _copyData object by ascending value in key 'valor'
       _copyData.sort((a, b) => a[this.graph.grafico_valor] - b[this.graph.grafico_valor])
-      _theData.yValues = _copyData.map(jurisdiccionData => jurisdiccionData.jurisdiccion)
+      _theData.yValues = _copyData.map(jurisdiccionData => jurisdiccionData.jurisdiccion_grafico)
       _copyData.forEach((jurisdiccionData) => {
         const _aux = {}
         _aux.value = jurisdiccionData[this.graph.grafico_valor]
