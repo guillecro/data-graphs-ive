@@ -13,6 +13,11 @@
           {{ state }}
         </b-navbar-item>
       </b-navbar-dropdown>
+      <b-navbar-dropdown :label="getChapterLabel" :collapsible="true">
+        <b-navbar-item v-for="(chapter,index) in chapters" :key="`nav-chapters-${index}`" @click="setChapter(chapter)">
+          {{ chapter }}
+        </b-navbar-item>
+      </b-navbar-dropdown>
     </template>
 
     <template #end>
@@ -61,8 +66,21 @@ export default {
         return `${this.selected.length} seleccionados`
       }
     },
+    getChapterLabel () {
+      if (this.chapter === null) {
+        return 'Seleccione un capítulo'
+      } else {
+        return this.chapter
+      }
+    },
     mapStates () {
       return this.$store.state.map.list
+    },
+    chapters () {
+      return this.$store.state.data.chapters
+    },
+    chapter () {
+      return this.$store.state.data.chapter
     },
     isLoading () {
       return this.$store.state.data.isLoading
@@ -77,6 +95,9 @@ export default {
     },
     changeColumns (columns) {
       this.$store.commit('system/setColumns', columns)
+    },
+    setChapter (chapter) {
+      this.$store.commit('data/setChapter', chapter)
     },
     setProMode (val) {
       this.$store.dispatch('system/setProMode', val)

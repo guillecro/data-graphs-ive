@@ -1,6 +1,8 @@
 export const state = () => ({
   isLoading: true,
   data: {},
+  chapters: [],
+  chapter: null,
   index: []
 })
 
@@ -10,6 +12,13 @@ export const mutations = {
   },
   addData (state, payload) {
     state.data[payload.id] = payload.data
+  },
+  setChapter (state, chapter) {
+    console.log('setChapter', chapter)
+    state.chapter = chapter
+  },
+  setChapters (state, chapters) {
+    state.chapters = chapters
   },
   setIndex (state, index) {
     state.index = index
@@ -33,5 +42,8 @@ export const getters = {
       return false
     }
     return state.index.every(g => g.fetched)
+  },
+  graphsChapter: (state) => {
+    return state.index.filter(g => g.capitulo === state.chapter)
   }
 }
