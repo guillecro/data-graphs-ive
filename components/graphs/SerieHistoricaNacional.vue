@@ -47,6 +47,8 @@ export default {
         //     type: 'shadow'
         //   }
         // },
+        animation: true,
+        animationDuration: 10000,
         tooltip: {
           trigger: 'axis',
           textStyle: {
