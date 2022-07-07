@@ -18,7 +18,7 @@
                 Seleccione un capítulo
               </h1>
               <div class="buttons is-centered">
-                <button v-for="(chapter,index) in chapters" :key="`button-chapter-${index}`" @click="setChapter(chapter)" class="button is-outlined is-primary">
+                <button v-for="(chapter,index) in chapters" :key="`button-chapter-${index}`" class="button is-outlined is-primary" :class="chapter == '' ? 'is-hidden' : null" @click="setChapter(chapter)">
                   {{ chapter }}
                 </button>
               </div>

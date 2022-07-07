@@ -9,7 +9,8 @@ import {
 import {
   BarChart,
   PieChart,
-  ParallelChart
+  ParallelChart,
+  LineChart
 } from 'echarts/charts'
 import {
   GridComponent,
@@ -24,6 +25,7 @@ use([
   BarChart,
   PieChart,
   ParallelChart,
+  LineChart,
   GridComponent,
   TooltipComponent,
   VisualMapComponent,

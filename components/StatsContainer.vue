@@ -18,6 +18,7 @@
         <!-- <VueEchart class="chart" :option="chartOptions" :autoresize="true" /> -->
         <GraphTorta v-if="graph.grafico_tipo == 'torta'" :data="theData" :graph="graph" />
         <GraphBarraHorizontal v-if="graph.grafico_tipo == 'barra_horizontal'" :data="theData" :graph="graph" />
+        <SerieHistoricaNacional v-if="graph.grafico_tipo == 'serie_historica_nacional'" :data="theData" :graph="graph" />
       </div>
       <div v-else class="chart is-flex is-justify-content-center is-align-items-center">
         <i class="fas fa-spin fa-5x fa-sync" />
@@ -54,10 +55,12 @@
 <script>
 import GraphTorta from './graphs/Torta.vue'
 import GraphBarraHorizontal from './graphs/BarraHorizontal.vue'
+import SerieHistoricaNacional from './graphs/SerieHistoricaNacional.vue'
 export default {
   components: {
     GraphTorta,
-    GraphBarraHorizontal
+    GraphBarraHorizontal,
+    SerieHistoricaNacional
   },
   props: {
     graph: {
