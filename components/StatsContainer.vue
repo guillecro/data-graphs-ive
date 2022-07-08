@@ -36,18 +36,18 @@
       <h1 class="subtitle is-6 has-text-grey-light is-flex-grow-1 mb-5">
         Fuente: {{ graph.fuente }}<br>Fecha de actualización: {{ graph.fecha_actualizacion }}
       </h1>
-      <div class="panel is-primary">
-        <div class="panel-heading">
+      <div class="panel is-primary mb-6">
+        <div class="panel-heading is-clickable" :class="!showTable ? 'special-radius' : null" @click="showTable = !showTable">
           <div class="panel-title has-text-weight-normal is-flex is-justify-content-space-between is-align-items-center">
             <div>
-              <i class="fas fa-table" />&nbsp;Tabla
+              <i class="fas fa-table" />&nbsp;Tabla de datos
             </div>
-            <a class="has-text-white" style="white-space: nowrap;" @click="showTable = !showTable">
+            <a class="has-text-white" style="white-space: nowrap;">
               {{ showTable ? 'Ocultar' : 'Mostrar' }}&nbsp;<i class="fas fa-fw" :class="{'fa-angle-down': !showTable, 'fa-angle-up': showTable}" />
             </a>
           </div>
         </div>
-        <div v-if="showTable" class="panel-block px-0 overflow-x has-background-white">
+        <div v-show="showTable" class="panel-block px-0 overflow-x has-background-white">
           <div class="" style="width:100%;">
             <TableData :graph="graph" :data="theData" />
           </div>
@@ -79,7 +79,7 @@ export default {
   },
   data () {
     return {
-      showTable: true,
+      showTable: false,
       theData: {
         keys: [],
         labels: {},
@@ -281,5 +281,8 @@ export default {
 }
 .overflow-x{
   overflow-x: auto;
+}
+.special-radius{
+  border-radius: 5px;
 }
 </style>
