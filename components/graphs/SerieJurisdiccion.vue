@@ -169,7 +169,6 @@ export default {
           endLabel: {
             show: true,
             formatter: (params) => {
-              console.log(params)
               return params.seriesName + ': ' + params.value.toFixed(2)
             }
           }
@@ -224,7 +223,6 @@ export default {
       //   }
       // }
       const theData = this.prepareData()
-      console.log(JSON.stringify(theData))
       // return theData
       // this.chartOptions.color = this.graph.serie_color.split(',')
       this.chartOptions.xAxis.data = theData.xValues

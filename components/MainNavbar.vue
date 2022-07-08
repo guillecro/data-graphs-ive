@@ -20,8 +20,8 @@
         </b-navbar-item>
       </b-navbar-dropdown>
       <b-navbar-dropdown :label="getChapterLabel" :collapsible="true">
-        <b-navbar-item v-for="(chapter,index) in chapters" :key="`nav-chapters-${index}`" @click="setChapter(chapter)">
-          {{ chapter }}
+        <b-navbar-item v-for="(chapterx,index) in chapters" :key="`nav-chapters-${index}`" @click="setChapter(chapterx)">
+          {{ chapterx }}
         </b-navbar-item>
       </b-navbar-dropdown>
     </template>
