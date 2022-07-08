@@ -4,7 +4,7 @@
 
 <script>
 export default {
-  name: 'SerieHistoricaNacional',
+  name: 'MultiserieJurisdiccion',
   props: {
     data: {
       type: Object,

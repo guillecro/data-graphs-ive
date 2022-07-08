@@ -1,5 +1,5 @@
 <template>
-  <VueEchart v-if="graphReady" class="chart" :option="chartOptions" :autoresize="true" @click="handleChartClickEvent" />
+  <VueEchart v-if="graphReady" class="chart" :option="chartOptions" :autoresize="true" />
 </template>
 
 <script>

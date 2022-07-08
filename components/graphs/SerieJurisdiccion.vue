@@ -4,7 +4,7 @@
 
 <script>
 export default {
-  name: 'SerieHistoricaNacional',
+  name: 'SerieJurisdiccion',
   props: {
     data: {
       type: Object,
@@ -33,6 +33,7 @@ export default {
           },
           backgroundColor: '#f5f5f5',
           borderWidth: 0,
+          order: 'valueDesc',
           extraCssText: 'box-shadow: none;'
         },
         // tooltip: {
@@ -130,8 +131,8 @@ export default {
   methods: {
     handleChartClickEvent (event) {
       if (!this.proMode) {
-        if (event.data && event.data && event.data.id_jurisdiccion) {
-          this.$store.dispatch('map/setSelected', event.data.id_jurisdiccion)
+        if (event.seriesIndex) {
+          this.$store.dispatch('map/setSelected', this.chartOptions.series[event.seriesIndex].id_jurisdiccion)
         }
       }
     },
@@ -165,6 +166,7 @@ export default {
         const serie = {
           name: jurisdiccionData.jurisdiccion_grafico,
           type: 'line',
+          id_jurisdiccion: jurisdiccionData.id_jurisdiccion,
           data: serieValues,
           endLabel: {
             show: true,
