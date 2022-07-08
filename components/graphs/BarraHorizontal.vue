@@ -52,10 +52,11 @@ export default {
           padding: [4, 10],
           textStyle: {
             fontFamily: 'Encode Sans',
-            fontSize: 14,
-            color: '#FFF'
+            fontSize: 14
+            // color: '#FFF'
           },
-          backgroundColor: '#9283BE',
+          backgroundColor: '#f5f5f5',
+          // backgroundColor: '#9283BE',
           borderWidth: 0,
           extraCssText: 'box-shadow: none;',
           formatter: (a) => {

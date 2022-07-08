@@ -118,7 +118,8 @@ export default {
           label: this.data.labels[label],
           numeric: this.graph.cast_int.includes(label) || this.graph.cast_float.includes(label),
           centered: this.graph.cast_int.includes(label) || this.graph.cast_float.includes(label),
-          sortable: this.graph.table_sortable.includes(label)
+          sortable: this.graph.table_sortable.includes(label),
+          sticky: (this.graph.table_sticky_columns && this.graph.table_sticky_columns.includes(label)) || false
         }
         // special column: jurisdiccion
         if (label === 'jurisdiccion') {

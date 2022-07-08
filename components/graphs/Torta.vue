@@ -29,10 +29,11 @@ export default {
           borderWidth: 0,
           textStyle: {
             fontFamily: 'Encode Sans',
-            fontSize: 14,
-            color: '#FFF'
+            fontSize: 14
+            // color: '#FFF'
           },
-          backgroundColor: '#9283BE',
+          // backgroundColor: '#9283BE',
+          backgroundColor: '#f5f5f5',
           extraCssText: 'box-shadow: none;',
           formatter: (a) => {
             if (this.selected.length === 1 && this.selected.includes('nacional')) {

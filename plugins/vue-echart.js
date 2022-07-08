@@ -17,7 +17,9 @@ import {
   TooltipComponent,
   VisualMapComponent,
   ToolboxComponent,
-  ParallelComponent
+  ParallelComponent,
+  TitleComponent,
+  LegendComponent
 } from 'echarts/components'
 
 use([
@@ -30,7 +32,9 @@ use([
   TooltipComponent,
   VisualMapComponent,
   ToolboxComponent,
-  ParallelComponent
+  ParallelComponent,
+  TitleComponent,
+  LegendComponent
 ])
 
 // register globally (or you can do it locally)

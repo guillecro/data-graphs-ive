@@ -17,87 +17,18 @@ export default {
   },
   data () {
     return {
-      // colors: [
-      //   '#b4acd1',
-      //   '#aaa1cb',
-      //   '#a196c5',
-      //   '#978bbf',
-      //   '#8d80b9',
-      //   '#8375b3',
-      //   '#796aad',
-      //   '#705fa7',
-      //   '#67579e',
-      //   '#605193',
-      //   '#594b88',
-      //   '#52457d',
-      //   '#4b3f72',
-      //   '#433967',
-      //   '#3c335c',
-      //   '#352d51',
-      //   '#2e2746',
-      //   '#27213b',
-      //   '#201b31',
-      //   '#191526'
-      // ],
       chartOptions: {
-        // visualMap: {
-        //   show: false,
-        //   min: 0,
-        //   max: 0,
-        //   inRange: {
-        //     colorAlpha: [0.1, 1]
-        //   }
-        // },
-        // tooltip: {
-        //   padding: [4, 10],
-        //   borderWidth: 0,
-        //   textStyle: {
-        //     fontFamily: 'Encode Sans',
-        //     fontSize: 12,
-        //     color: '#FFF'
-        //   },
-        //   backgroundColor: '#9283BE',
-        //   extraCssText: 'box-shadow: none;',
-        //   formatter: (a) => {
-        //     // console.log()
-        //     return `<p class="has-text-centered has-text-weight-bold">${a.data.name}</p><p class="has-text-centered">${a.percent} %</p>`
-        //   }
-        // },
-        // tooltip: {
-        //   trigger: 'axis',
-        //   axisPointer: {
-        //     type: 'shadow'
-        //   }
-        // },
-        // color: [
-        //   '#b4acd1',
-        //   '#aaa1cb',
-        //   '#a196c5',
-        //   '#978bbf',
-        //   '#8d80b9',
-        //   '#8375b3',
-        //   '#796aad',
-        //   '#705fa7',
-        //   '#67579e',
-        //   '#605193',
-        //   '#594b88',
-        //   '#52457d',
-        //   '#4b3f72',
-        //   '#433967',
-        //   '#3c335c',
-        //   '#352d51',
-        //   '#2e2746',
-        //   '#27213b',
-        //   '#201b31',
-        //   '#191526'
-        // ],
         animation: true,
         animationDuration: 7000,
+        animationEasing: 'linear',
+        // animationDurationUpdate: 800,
+        // animationEasingUpdate: 'linear',
+        // animationDelay: 800,
         tooltip: {
           trigger: 'axis',
           textStyle: {
             fontFamily: 'Encode Sans',
-            fontSize: 14
+            fontSize: 10
             // color: '#FFF'
           },
           backgroundColor: '#f5f5f5',
@@ -167,6 +98,18 @@ export default {
     selected () {
       return this.$store.state.map.selected
     },
+    mapStates () {
+      return this.$store.state.map.list
+    },
+    yLabel () {
+      if (this.selected[0] === 'nacional') {
+        return 'Nacional'
+      } else if (this.selected.length === 1 && this.selected[0] !== 'nacional') {
+        return this.mapStates[this.selected[0]]
+      } else {
+        return 'Nacional'
+      }
+    },
     selectedData () {
       return this.data.values.filter(d => this.selected.includes(d.jurisdiccion))
     },
@@ -193,24 +136,44 @@ export default {
       }
     },
     prepareChart () {
-      this.createSerie()
+      if (this.proMode) {
+        this.createSerieProMode()
+      } else {
+        this.createSerie()
+      }
     },
     prepareData () {
       const _theData = {
         series: [],
-        xValues: []
+        xValues: [],
+        seriesNames: []
       }
-      _theData.xValues = this.data.values.map(d => d.ano)
-      const seriesNames = this.graph.grafico_valor.split(',')
-      // const seriesLabels = seriesNames.map(column => this.theData.labels[column])
-      const series = seriesNames.map((name) => {
+      _theData.xValues = this.graph.grafico_x.split(',')
+      let _copyData
+      // No matter the mode, if it is just nacional, show every jurisdiccion
+      if ((this.selected.length === 1 && this.selected[0] === 'nacional') || this.selected.length > 1) {
+        // If the graph needs to include nacional, just put everything.
+        _copyData = JSON.parse(JSON.stringify(this.data.values.filter(jurisdiccionData => jurisdiccionData.id_jurisdiccion === 'nacional')))
+      } else {
+        _copyData = JSON.parse(JSON.stringify(this.data.values.filter(jurisdiccionData => this.selected.includes(jurisdiccionData.id_jurisdiccion))))
+      }
+      const seriesNames = this.graph.grafico_y.split(',')
+      _theData.seriesNames = seriesNames
+      const series = seriesNames.map((serieName, index) => {
+        const _aux = _copyData.find(s => s.serie === serieName)
+        const serieValues = _theData.xValues.map(c => _aux[c])
         return {
-          name: this.data.labels[name],
+          name: _aux.serie,
           type: 'line',
-          data: this.data.values.map(d => d[name])
+          data: serieValues
+          // color: this.graph.serie_color[index]
         }
       })
       _theData.series = series
+      // filter NaN or null
+      // _copyData = _copyData.filter((jurisdiccionData) => {
+      //   return (!isNaN(jurisdiccionData[this.graph.grafico_valor]) && jurisdiccionData[this.graph.grafico_valor] !== null)
+      // })
       return _theData
     },
     createSerie () {
@@ -232,9 +195,19 @@ export default {
       //   }
       // }
       const theData = this.prepareData()
+      // return theData
       this.chartOptions.color = this.graph.serie_color.split(',')
       this.chartOptions.xAxis.data = theData.xValues
-      this.chartOptions.series = theData.series
+      // this.chartOptions.yAxis.name = this.yLabel
+      this.chartOptions.title = {
+        text: this.yLabel,
+        left: 'center',
+        textStyle: {
+          fontFamily: 'Encode Sans',
+          fontSize: 14,
+          color: '#8D80B9'
+        }
+      }
       this.chartOptions.legend = {
         show: true,
         top: 'bottom',
@@ -244,7 +217,11 @@ export default {
           fontSize: 10
         }
       }
+      this.chartOptions.series = theData.series
       this.graphReady = true
+    },
+    createSerieProMode () {
+      return 'sasa'
     }
   }
 }

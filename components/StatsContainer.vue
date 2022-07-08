@@ -10,7 +10,7 @@
       <h1 class="title is-4 has-text-primary has-text-centered is-700">
         {{ graph.nombre_visualizacion }}
       </h1>
-      <h1 class="subtitle is-5 mb-0 has-text-dark has-text-centered">
+      <h1 class="subtitle is-5 mb-3 has-text-dark has-text-centered">
         {{ graph.subtitulo_vizualizacion }}
       </h1>
       <!-- {{ graph }} -->
@@ -19,6 +19,8 @@
         <GraphTorta v-if="graph.grafico_tipo == 'torta'" :data="theData" :graph="graph" />
         <GraphBarraHorizontal v-if="graph.grafico_tipo == 'barra_horizontal'" :data="theData" :graph="graph" />
         <SerieHistoricaNacional v-if="graph.grafico_tipo == 'serie_historica_nacional'" :data="theData" :graph="graph" />
+        <MultiserieJurisdiccion v-if="graph.grafico_tipo == 'multiserie_jurisdiccion'" :data="theData" :graph="graph" />
+        <SerieJurisdiccion v-if="graph.grafico_tipo == 'serie_jurisdiccion'" :data="theData" :graph="graph" />
       </div>
       <div v-else class="chart is-flex is-justify-content-center is-align-items-center">
         <i class="fas fa-spin fa-5x fa-sync" />
@@ -27,6 +29,9 @@
         <div class="has-background-white has-text-centered" style="line-height: normal; border: 2px solid #000; height: 20px; width: 20px; border-radius: 20px; position: absolute; top: 0; left: -10px;">
           1
         </div>
+      </div> -->
+      <!-- <div>
+        <p v-if="graph.grafico_tipo == 'multiserie_jurisdiccion'">Se visualizan para {{selected}}</p>
       </div> -->
       <h1 class="subtitle is-6 has-text-grey-light is-flex-grow-1 mb-5">
         Fuente: {{ graph.fuente }}<br>Fecha de actualización: {{ graph.fecha_actualizacion }}
@@ -42,8 +47,8 @@
             </a>
           </div>
         </div>
-        <div v-if="showTable" class="panel-block px-0">
-          <div class="container">
+        <div v-if="showTable" class="panel-block px-0 overflow-x has-background-white">
+          <div class="" style="width:100%;">
             <TableData :graph="graph" :data="theData" />
           </div>
         </div>
@@ -56,11 +61,15 @@
 import GraphTorta from './graphs/Torta.vue'
 import GraphBarraHorizontal from './graphs/BarraHorizontal.vue'
 import SerieHistoricaNacional from './graphs/SerieHistoricaNacional.vue'
+import MultiserieJurisdiccion from './graphs/MultiserieJurisdiccion.vue'
+import SerieJurisdiccion from './graphs/SerieJurisdiccion.vue'
 export default {
   components: {
     GraphTorta,
     GraphBarraHorizontal,
-    SerieHistoricaNacional
+    SerieHistoricaNacional,
+    MultiserieJurisdiccion,
+    SerieJurisdiccion
   },
   props: {
     graph: {
@@ -181,6 +190,9 @@ export default {
     selected () {
       return this.$store.state.map.selected
     },
+    list () {
+      return this.$store.state.map.list
+    },
     selectedData () {
       return this.theData.values.filter(d => this.selected.includes(d.jurisdiccion))
     },
@@ -266,5 +278,8 @@ export default {
 <style lang="scss" scoped>
 .chart {
   min-height: 550px;
+}
+.overflow-x{
+  overflow-x: auto;
 }
 </style>

@@ -19,3 +19,7 @@ tr.is-info {
     @include font-weight(100 * $i)
   }
 }
+
+.b-table{
+  font-size: 0.85rem;
+}

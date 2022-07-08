@@ -1,10 +1,16 @@
 <template>
   <b-navbar
     type="is-primary"
+    :shadow="true"
   >
-    <template #brand>
+    <!-- <template #brand>
       <b-navbar-item>
         <i class="fas fa-chart-pie" />
+      </b-navbar-item>
+    </template> -->
+    <template #brand>
+      <b-navbar-item @click="setChapter(null)">
+        <img src="@/assets/logo-white.png" alt="IVE">
       </b-navbar-item>
     </template>
     <template #start>

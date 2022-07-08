@@ -22,7 +22,6 @@
                   {{ chapter }}
                 </button>
               </div>
-              <hr>
             </div>
             <div v-else>
               <h1 class="subtitle is-4 has-text-dark has-text-centered">
@@ -33,12 +32,16 @@
               </h1>
               <hr>
               <div class="columns is-multiline">
-                <div v-for="graph in graphs" :key="`graph-${graph.id}`" class="column" :class="getColumns">
+                <div v-for="graph in graphs" :key="`graph-${graph.id}`" class="column" :class="getColumns(graph)">
                   <StatsContainer :graph="graph" />
                 </div>
               </div>
             </div>
           </div>
+          <hr>
+          <img src="@/assets/logo.png" class="image mx-auto my-6" width="400" alt="">
+          <img src="@/assets/logos.png" class="image mx-auto my-6" width="200" alt="">
+          <!-- <img src="@/assets/flyer.png" class="image" alt=""> -->
         </div>
       </div>
     </div>
@@ -76,6 +79,11 @@ export default {
             // console.log(entry[i])
             // if entry[i] is "TRUE" save as boolean
             graph[k] = entry[i] === 'TRUE'
+          } else if (k === 'force_full_width') {
+            // console.log(k)
+            // console.log(entry[i])
+            // if entry[i] is "TRUE" save as boolean
+            graph[k] = entry[i] === 'TRUE'
           } else if (k === 'capitulo') {
             // chapters
             // if entry[i] is already in the array chapters, dont add it. If it is not, add it.
@@ -95,16 +103,12 @@ export default {
       this.$store.commit('data/setIndex', output)
       this.$store.commit('data/setChapters', chapters)
       this.$store.commit('data/setIsLoading', false)
-      console.log(chapters)
     } catch (err) {
       this.$buefy.dialog.alert(`Error al obtener los datos: ${err.message}`)
       return null
     }
   },
   computed: {
-    getColumns () {
-      return `is-${this.$store.state.system.columns}`
-    },
     chapters () {
       return this.$store.state.data.chapters
     },
@@ -123,6 +127,13 @@ export default {
     }
   },
   methods: {
+    getColumns (graph) {
+      if (graph.force_full_width) {
+        return 'is-12'
+      } else {
+        return `is-${this.$store.state.system.columns}`
+      }
+    },
     setChapter (chapter) {
       this.$store.commit('data/setChapter', chapter)
     }
