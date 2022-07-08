@@ -1,7 +1,5 @@
 <template>
   <section class="top-left">
-    <img src="@/assets/top-left.png" class="tl" alt="">
-    <img src="@/assets/bottom-right.png" class="br" alt="">
     <MainStructure />
   </section>
 </template>
